@@ -25,6 +25,11 @@ class MockHttpEngine {
       return null;
     }
 
+    // Apply delay if specified
+    if (rule.delay > Duration.zero) {
+      await Future.delayed(rule.delay);
+    }
+
     return await rule.handler(request);
   }
 }

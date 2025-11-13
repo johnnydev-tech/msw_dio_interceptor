@@ -14,6 +14,7 @@ class MockRule {
   final String? url;
   final Map<String, dynamic>? queryParams;
   final MockResponseHandler handler;
+  final Duration delay;
 
   /// Creates a [MockRule] that matches a request by its [path] and [method].
   MockRule({
@@ -21,7 +22,9 @@ class MockRule {
     required this.method,
     required this.handler,
     this.queryParams,
-  })  : regex = null,
+    int delayMs = 0,
+  })  : delay = Duration(milliseconds: delayMs),
+        regex = null,
         url = null;
 
   /// Creates a [MockRule] that matches a request by a [RegExp] pattern.
@@ -30,7 +33,9 @@ class MockRule {
     required this.method,
     required this.handler,
     this.queryParams,
-  })  : regex = RegExp(pattern),
+    int delayMs = 0,
+  })  : delay = Duration(milliseconds: delayMs),
+        regex = RegExp(pattern),
         path = null,
         url = null;
 
@@ -40,6 +45,8 @@ class MockRule {
     required this.method,
     required this.handler,
     this.queryParams,
-  })  : regex = null,
+    int delayMs = 0,
+  })  : delay = Duration(milliseconds: delayMs),
+        regex = null,
         path = null;
 }

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
-import '../../core/mock_engine.dart';
-import '../../core/mock_request.dart';
+import 'mock_engine.dart';
+import 'mock_request.dart';
 
 /// A Dio interceptor that uses a [MockHttpEngine] to mock requests.
 class MockInterceptor extends Interceptor {

@@ -87,51 +87,172 @@ dio.interceptors.add(MockInterceptor(engine: mockEngine));
 await dio.get('/products');
 ```
 
-## Testing
+## Advanced Usage
 
-This package is ideal for writing clean and reliable tests for your data layer.
+### Matching by RegExp
 
-In your test `setUp`, create the engine and interceptor, and use `MockRegistry.clear()` to ensure test isolation.
+Use `MockRule.regex` to match requests against a regular expression. This is useful for dynamic paths, like fetching items by ID.
 
 ```dart
+MockRegistry.register(
+  MockRule.regex(
+    pattern: r'\/users\/\d+', // Matches /users/1, /users/123, etc.
+    method: 'GET',
+    handler: (request) => MockResponse.json({'id': 123, 'name': 'John'}),
+  ),
+);
+```
+
+### Matching by Full URL
+
+Use `MockRule.url` to match an exact URL, including the domain.
+
+```dart
+MockRegistry.register(
+  MockRule.url(
+    url: 'https://api.example.com/v1/me',
+    method: 'GET',
+    handler: (request) => MockResponse.json({'name': 'Authenticated User'}),
+  ),
+);
+```
+
+### Matching with Query Parameters
+
+The `queryParams` property ensures that a rule only matches if the request contains the specified query parameters.
+
+```dart
+MockRegistry.register(
+  MockRule(
+    path: '/search',
+    method: 'GET',
+    queryParams: {'q': 'test', 'page': '1'},
+    handler: (request) => MockResponse.json({'results': []}),
+  ),
+);
+```
+
+### Simulating Network Latency
+
+Use the `delayMs` property to simulate network latency for a specific mock.
+
+```dart
+MockRegistry.register(
+  MockRule(
+    path: '/slow-request',
+    method: 'GET',
+    delayMs: 1500, // Delays the response by 1.5 seconds
+    handler: (request) => MockResponse.text('Finally got here!'),
+  ),
+);
+```
+
+## Testing
+
+A primary use case for this package is to write clean and reliable tests for your application's data layer (e.g., repositories or data sources) without making real network requests.
+
+### Philosophy
+
+The goal is to test your data layer's logic (how it handles success, errors, and data parsing) without depending on a live server. By mocking the server response at the network level, your data source class doesn't need to know it's being tested.
+
+### Example: Testing a Repository
+
+Imagine you have a `ProductRepository` that fetches products from an API.
+
+```dart
+// Your repository class
+class ProductRepository {
+  final Dio _dio;
+  ProductRepository(this._dio);
+
+  Future<List<Product>> fetchProducts() async {
+    try {
+      final response = await _dio.get('/products');
+      final items = (response.data['items'] as List);
+      return items.map((item) => Product.fromJson(item)).toList();
+    } catch (e) {
+      // In a real app, you'd have more robust error handling
+      throw Exception('Failed to fetch products');
+    }
+  }
+}
+
+class Product {
+  final int id;
+  final String name;
+  Product({required this.id, required this.name});
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(id: json['id'], name: json['name']);
+  }
+}
+```
+
+Now, let's write a test for this repository.
+
+```dart
+// In your test file
 import 'package:test/test.dart';
 import 'package:dio/dio.dart';
 import 'package:msw_dio_interceptor/msw_dio_interceptor.dart';
 
 void main() {
   late Dio dio;
-  late MockHttpEngine mockEngine;
+  late ProductRepository productRepository;
 
   setUp(() {
-    // Enable the engine for all tests
-    mockEngine = MockHttpEngine(enabled: true);
-    
-    // Create a Dio instance with the interceptor
+    // 1. Create a new Dio instance for each test
     dio = Dio();
-    dio.interceptors.add(MockInterceptor(engine: mockEngine));
 
-    // Clear all mocks before each test
+    // 2. Add the interceptor, making sure it's enabled for tests
+    dio.interceptors.add(MswDioInterceptor(enabled: true));
+    
+    // 3. Create an instance of your repository
+    productRepository = ProductRepository(dio);
+
+    // 4. Clear all mocks before each test to ensure isolation
     MockRegistry.clear();
   });
 
   test('fetchProducts returns a list of products on success', () async {
-    // Arrange: Define the mock response
+    // Arrange: Define the mock response for this specific test
     MockRegistry.register(
       MockRule(
         path: '/products',
         method: 'GET',
-        handler: (request) => MockResponse.json({
-          'items': [{'id': 1, 'name': 'Mock Product'}]
+        response: MockResponse.json({
+          'items': [
+            {'id': 1, 'name': 'Mock Product 1'},
+            {'id': 2, 'name': 'Mock Product 2'},
+          ]
         }),
       ),
     );
 
-    // Act
-    final response = await dio.get('/products');
+    // Act: Call the method you want to test
+    final products = await productRepository.fetchProducts();
 
-    // Assert
-    expect(response.statusCode, 200);
-    expect(response.data, isA<String>());
+    // Assert: Verify the result
+    expect(products, isA<List<Product>>());
+    expect(products.length, 2);
+    expect(products.first.name, 'Mock Product 1');
+  });
+
+  test('fetchProducts throws an exception on server error', () async {
+    // Arrange: Mock a server error response
+    MockRegistry.register(
+      MockRule(
+        path: '/products',
+        method: 'GET',
+        response: MockResponse.json({'error': 'Internal Server Error'}),
+        statusCode: 500,
+      ),
+    );
+
+    // Act & Assert: Verify that the correct exception is thrown
+    expect(
+      () => productRepository.fetchProducts(),
+      throwsA(isA<Exception>()),
+    );
   });
 }
 ```
