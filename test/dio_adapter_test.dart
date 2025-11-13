@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:msw_dio_interceptor/msw_dio_interceptor.dart';
@@ -8,14 +10,15 @@ void main() {
   late MockHttpEngine engine;
 
   setUp(() {
-    dio = Dio();
-    engine = MockHttpEngine(enabled: true);
-    dio.interceptors.add(MockInterceptor(engine: engine));
     MockRegistry.clear();
   });
 
   group('Dio Adapter Tests', () {
     test('should mock response with path', () async {
+      engine = MockHttpEngine(enabled: true);
+      dio = Dio();
+      dio.interceptors.add(MockInterceptor(engine: engine));
+
       MockRegistry.register(
         MockRule(
           path: '/test',
@@ -30,6 +33,10 @@ void main() {
     });
 
     test('should mock response with regex', () async {
+      engine = MockHttpEngine(enabled: true);
+      dio = Dio();
+      dio.interceptors.add(MockInterceptor(engine: engine));
+
       MockRegistry.register(
         MockRule.regex(
           pattern: r'\/users\/\d+',
@@ -45,6 +52,10 @@ void main() {
 
     test('should mock response with url', () async {
       const url = 'https://api.example.com/v1/me';
+      engine = MockHttpEngine(enabled: true);
+      dio = Dio();
+      dio.interceptors.add(MockInterceptor(engine: engine));
+
       MockRegistry.register(
         MockRule.url(
           url: url,
@@ -59,6 +70,10 @@ void main() {
     });
 
     test('should mock response with query params', () async {
+      engine = MockHttpEngine(enabled: true);
+      dio = Dio();
+      dio.interceptors.add(MockInterceptor(engine: engine));
+
       MockRegistry.register(
         MockRule(
           path: '/search',
@@ -76,6 +91,10 @@ void main() {
 
     test('should handle delay correctly', () {
       fakeAsync((async) {
+        engine = MockHttpEngine(enabled: true);
+        dio = Dio();
+        dio.interceptors.add(MockInterceptor(engine: engine));
+
         MockRegistry.register(
           MockRule(
             path: '/delayed',
@@ -100,11 +119,57 @@ void main() {
     });
 
     test('should pass through when no rule matches', () {
+      engine = MockHttpEngine(enabled: true);
+      dio = Dio();
+      dio.interceptors.add(MockInterceptor(engine: engine));
       // No rules registered
       expect(
         () => dio.get('http://unreachable.example.com/test'),
         throwsA(isA<DioException>()),
       );
+    });
+
+    test('should log mocked requests when log is true', () async {
+      final logOutput = <String>[];
+      engine = MockHttpEngine(enabled: true);
+      dio = Dio();
+      dio.interceptors.add(MockInterceptor(engine: engine, log: true, logPrint: logOutput.add));
+
+      MockRegistry.register(
+        MockRule(
+          path: '/logged',
+          method: 'GET',
+          handler: (_) => MockResponse.json({'status': 'logged'}),
+        ),
+      );
+
+      await dio.get('http://example.com/logged');
+
+      expect(logOutput, isNotEmpty);
+      expect(logOutput.first, contains('╔══ 🚀 Mocked Request ══╗'));
+      expect(logOutput.first, contains('║ URI: http://example.com/logged'));
+      expect(logOutput.first, contains('║ Method: GET'));
+      expect(logOutput.first, contains('║ Status: 200'));
+      expect(logOutput.first, contains('║ Data: {"status":"logged"}'));
+    });
+
+    test('should not log mocked requests when log is false', () async {
+      final logOutput = <String>[];
+      engine = MockHttpEngine(enabled: true);
+      dio = Dio();
+      dio.interceptors.add(MockInterceptor(engine: engine, log: false, logPrint: logOutput.add));
+
+      MockRegistry.register(
+        MockRule(
+          path: '/not-logged',
+          method: 'GET',
+          handler: (_) => MockResponse.json({'status': 'not logged'}),
+        ),
+      );
+
+      await dio.get('http://example.com/not-logged');
+
+      expect(logOutput, isEmpty);
     });
   });
 }

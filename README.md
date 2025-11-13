@@ -87,6 +87,40 @@ dio.interceptors.add(MockInterceptor(engine: mockEngine));
 await dio.get('/products');
 ```
 
+## Logging
+
+You can enable logging for mocked requests to see details directly in your console. This is useful for debugging and understanding which mocks are being hit.
+
+To enable logging, set the `log` parameter to `true` when creating the `MockInterceptor`.
+
+```dart
+import 'package:flutter/foundation.dart'; // For debugPrint
+
+// ...
+final dio = Dio();
+dio.interceptors.add(
+  MockInterceptor(
+    engine: mockEngine,
+    log: true, // Enable logging
+    // Optional: Provide a custom logPrint function (defaults to print)
+    // logPrint: debugPrint, // Use debugPrint in Flutter apps
+  ),
+);
+```
+
+Example log output:
+
+```
+╔══ 🚀 Mocked Request ══╗
+║ URI: http://example.com/products
+║ Method: GET
+║
+╟── Mock Response ───
+║ Status: 200
+║ Data: {"items":[{"id":1,"name":"Mock Product"}]}
+╚════════════════════╝
+```
+
 ## Advanced Usage
 
 ### Matching by RegExp

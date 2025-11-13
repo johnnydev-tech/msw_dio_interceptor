@@ -3,11 +3,19 @@ import 'package:dio/dio.dart';
 import 'mock_engine.dart';
 import 'mock_request.dart';
 
+typedef LogPrint = void Function(String message);
+
 /// A Dio interceptor that uses a [MockHttpEngine] to mock requests.
 class MockInterceptor extends Interceptor {
   final MockHttpEngine engine;
+  final bool log;
+  final LogPrint logPrint;
 
-  MockInterceptor({required this.engine});
+  MockInterceptor({
+    required this.engine,
+    this.log = false,
+    this.logPrint = print,
+  });
 
   @override
   Future<void> onRequest(
@@ -35,6 +43,10 @@ class MockInterceptor extends Interceptor {
         ),
       );
 
+      if (log) {
+        _logMockedRequest(options, dioResponse);
+      }
+
       if (mockResponse.statusCode >= 400) {
         handler.reject(
           DioException(requestOptions: options, response: dioResponse),
@@ -47,5 +59,18 @@ class MockInterceptor extends Interceptor {
     }
 
     handler.next(options);
+  }
+
+  void _logMockedRequest(RequestOptions options, Response response) {
+    final buffer = StringBuffer();
+    buffer.writeln('╔══ 🚀 Mocked Request ══╗');
+    buffer.writeln('║ URI: ${options.uri}');
+    buffer.writeln('║ Method: ${options.method}');
+    buffer.writeln('║');
+    buffer.writeln('╟── Mock Response ───');
+    buffer.writeln('║ Status: ${response.statusCode}');
+    buffer.writeln('║ Data: ${response.data}');
+    buffer.writeln('╚════════════════════╝');
+    logPrint(buffer.toString());
   }
 }

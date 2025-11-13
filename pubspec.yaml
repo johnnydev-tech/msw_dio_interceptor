@@ -1,8 +1,9 @@
 name: msw_dio_interceptor
-description: A client-agnostic mock engine for Dio and http, inspired by MSW.
+description: A powerful mock interceptor for Dio, inspired by MSW. Easily mock HTTP requests in your Dart and Flutter applications.
 version: 1.0.0
 repository: https://github.com/johnnydev-tech/msw_dio_interceptor
 homepage: https://github.com/johnnydev-tech/msw_dio_interceptor
+
 
 environment:
   sdk: '>=2.12.0 <4.0.0'
