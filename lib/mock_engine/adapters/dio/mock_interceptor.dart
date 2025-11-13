@@ -1,0 +1,51 @@
+import 'package:dio/dio.dart';
+
+import '../../core/mock_engine.dart';
+import '../../core/mock_request.dart';
+
+/// A Dio interceptor that uses a [MockHttpEngine] to mock requests.
+class MockInterceptor extends Interceptor {
+  final MockHttpEngine engine;
+
+  MockInterceptor({required this.engine});
+
+  @override
+  Future<void> onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    final mockRequest = MockRequest(
+      url: options.uri.toString(),
+      path: options.uri.path,
+      method: options.method,
+      query: options.queryParameters,
+      headers: options.headers.map((k, v) => MapEntry(k, v.toString())),
+      body: options.data,
+    );
+
+    final mockResponse = await engine.handle(mockRequest);
+
+    if (mockResponse != null) {
+      final dioResponse = Response(
+        data: mockResponse.data,
+        statusCode: mockResponse.statusCode,
+        requestOptions: options,
+        headers: Headers.fromMap(
+          mockResponse.headers?.map((k, v) => MapEntry(k, [v])) ?? {},
+        ),
+      );
+
+      if (mockResponse.statusCode >= 400) {
+        handler.reject(
+          DioException(requestOptions: options, response: dioResponse),
+          true,
+        );
+      } else {
+        handler.resolve(dioResponse, true);
+      }
+      return;
+    }
+
+    handler.next(options);
+  }
+}

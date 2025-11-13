@@ -6,7 +6,11 @@ const bool kEnableApiMock = bool.fromEnvironment('ENABLE_API_MOCK', defaultValue
 Future<void> main() async {
   // --- 1. Setup the Interceptor ---
   final dio = Dio();
-  dio.interceptors.add(MswDioInterceptor(enabled: kEnableApiMock));
+  dio.interceptors.add(
+    MockInterceptor(
+      engine: MockHttpEngine(enabled: kEnableApiMock),
+    ),
+  );
 
   // --- 2. Register Mock Rules ---
   setupMocks();
@@ -26,7 +30,14 @@ Future<void> main() async {
     final response = await dio.get('http://example.com/products');
     print('✅ Response [${response.statusCode}]: ${response.data}');
   } on DioException catch (e) {
-    print('❌ Error: ${e.message}');
+    print('❌ Error [${e.response?.statusCode}]: ${e.message}');
+  }
+
+  try {
+    print('\nFetching /auth/profile...');
+    await dio.get('http://example.com/auth/profile');
+  } on DioException catch (e) {
+    print('❌ Error [${e.response?.statusCode}]: ${e.response?.data}');
   }
 }
 
@@ -34,13 +45,28 @@ void setupMocks() {
   MockRegistry.register(
     MockRule(
       path: '/products',
-      method: HttpMethod.get,
-      response: MockResponse.json({
-        'items': [
-          {'id': 1, 'name': 'Product A (from Mock)'},
-          {'id': 2, 'name': 'Product B (from Mock)'},
-        ],
-      }),
+      method: 'GET',
+      handler: (request) async {
+        return MockResponse.json({
+          'items': [
+            {'id': 1, 'name': 'Product A (from Mock)'},
+            {'id': 2, 'name': 'Product B (from Mock)'},
+          ],
+        });
+      },
+    ),
+  );
+
+  MockRegistry.register(
+    MockRule(
+      path: '/auth/profile',
+      method: 'GET',
+      handler: (request) async {
+        return MockResponse.json(
+          {'error': 'Unauthorized'},
+          statusCode: 401,
+        );
+      },
     ),
   );
 }

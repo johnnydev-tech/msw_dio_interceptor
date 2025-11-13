@@ -1,5 +1,5 @@
 name: msw_dio_interceptor
-description: A powerful and flexible mock interceptor for Dio, inspired by MSW.
+description: A client-agnostic mock engine for Dio and http, inspired by MSW.
 version: 1.0.0
 repository: https://github.com/johnnydev-tech/msw_dio_interceptor
 homepage: https://github.com/johnnydev-tech/msw_dio_interceptor

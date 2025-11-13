@@ -1,9 +1,12 @@
-/// A powerful and flexible mock interceptor for Dio, inspired by MSW.
+/// A client-agnostic mock engine for Dio and http, inspired by MSW.
 library msw_dio_interceptor;
 
-// Public API Exports
-export 'src/core/http_method.dart';
-export 'src/core/mock_registry.dart';
-export 'src/core/mock_response.dart';
-export 'src/core/mock_rule.dart';
-export 'src/interceptor/msw_dio_interceptor.dart';
+// Core
+export 'mock_engine/core/mock_engine.dart';
+export 'mock_engine/core/mock_registry.dart';
+export 'mock_engine/core/mock_request.dart';
+export 'mock_engine/core/mock_response.dart';
+export 'mock_engine/core/mock_rule.dart';
+
+// Adapters
+export 'mock_engine/adapters/dio/mock_interceptor.dart';
