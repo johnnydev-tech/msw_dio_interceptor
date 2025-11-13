@@ -1,0 +1,38 @@
+name: Publish MSW Interceptor to pub.dev
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze project
+        run: dart analyze --fatal-infos
+
+      - name: Run tests
+        run: dart test
+
+      - name: Dry run publishing
+        run: dart pub publish --dry-run
+
+      - name: Publish package
+        # This step requires a secret named PUB_CREDENTIALS to be configured in the repository settings.
+        # The secret should contain the contents of the pub-credentials.json file.
+        # This step will only run after manual approval in the GitHub Actions UI.
+        uses: k-paxian/dart-package-publisher@v1.5.1
+        with:
+          credential: ${{ secrets.PUB_CREDENTIALS }}
+          flutter: false # Set to true if it's a Flutter package
+          force: false # Set to true to force publishing
