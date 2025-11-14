@@ -31,6 +31,6 @@ jobs:
         # This step will only run after manual approval in the GitHub Actions UI.
         uses: k-paxian/dart-package-publisher@v1.5.1
         with:
-          credential: ${{ secrets.PUB_CREDENTIALS }}
+          credentialJson: ${{ secrets.PUB_CREDENTIALS }}
           flutter: false # Set to true if it's a Flutter package
           force: false # Set to true to force publishing
