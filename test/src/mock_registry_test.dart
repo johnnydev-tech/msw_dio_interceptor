@@ -60,7 +60,7 @@ void main() {
           handler: (_) => MockResponse.text('test'),
         ),
       );
-      
+
       MockRegistry.clear();
 
       final options = RequestOptions(path: '/test', method: 'GET');
