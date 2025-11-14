@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to create a release and push tags
+      pull-requests: write # Required to open/update pull requests (e.g., for changelog)
+      id-token: write # Required for OIDC authentication with some semantic-release plugins
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetch all history for semantic-release to analyze commits
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install semantic-release and plugins
+        run: npm install semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
