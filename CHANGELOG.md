@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/johnnydev-tech/msw_dio_interceptor/compare/v1.0.2...v1.0.3) (2025-11-14)
+
+
+### Bug Fixes
+
+* Ensure LICENSE file is OSI-compliant for recognition ([0f85fa4](https://github.com/johnnydev-tech/msw_dio_interceptor/commit/0f85fa482bf26243ec34dd8241a550054142e488))
+* Update copyright year in LICENSE file to 2025 ([d4ce587](https://github.com/johnnydev-tech/msw_dio_interceptor/commit/d4ce58791f03a3faf8f413d3171148856c60420b))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
