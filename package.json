@@ -8,8 +8,25 @@
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^9.2.6",
     "semantic-release": "^23.0.0"
+  },
+  "release": {
+    "branches": ["main"],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      ["@semantic-release/exec", {
+        "prepareCmd": "sed -i 's/^version: .*/version: ${nextRelease.version}/' pubspec.yaml"
+      }],
+      ["@semantic-release/git", {
+        "assets": ["CHANGELOG.md", "pubspec.yaml"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }],
+      "@semantic-release/github"
+    ]
   }
 }
