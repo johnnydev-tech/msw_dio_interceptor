@@ -2,11 +2,9 @@
 
 [![Build Status](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/ci.yaml/badge.svg)](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/ci.yaml)
 [![Pub Version](https://img.shields.io/pub/v/msw_dio_interceptor)](https://pub.dev/packages/msw_dio_interceptor)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A powerful and flexible mock interceptor for `dio`, inspired by [Mock Service Worker (MSW)](https://mswjs.io/).
-
-This package provides a clean, universal mocking engine and a dedicated `dio` interceptor to mock API responses, making it perfect for testing, development, and UI prototyping.
+Heavily inspired by [Mock Service Worker (MSW)](https://mswjs.io/), this is a powerful and flexible mock interceptor for `dio`, designed for Dart and Flutter applications. It enables you to intercept `dio` requests and return simulated responses based on configurable rules, making it perfect for testing, development, and UI prototyping without relying on a running backend.
 
 ## Table of Contents
 
@@ -30,6 +28,7 @@ This package provides a clean, universal mocking engine and a dedicated `dio` in
     -   [Philosophy](#philosophy)
     -   [Example: Testing a Repository](#example-testing-a-repository)
 -   [Contributing](#contributing)
+-   [Changelog](#changelog)
 -   [License](#license)
 
 ## Features
@@ -104,7 +103,7 @@ const bool kEnableApiMock = bool.fromEnvironment('ENABLE_API_MOCK');
 // 1. Create the engine (it no longer has an 'enabled' flag)
 final mockEngine = MockHttpEngine();
 
-// 2. Create a Dio instance
+// 2. Create a Dio instance and add the interceptor
 final dio = Dio();
 
 // 3. Conditionally add the interceptor
@@ -418,3 +417,17 @@ void main() {
     );
   });
 }
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to open an issue or submit a pull request.
+
+## Changelog
+
+### 1.0.0
+- Initial release.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
