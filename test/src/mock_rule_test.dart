@@ -29,7 +29,8 @@ void main() {
         path: nonMatchingOptions.uri.path,
         method: nonMatchingOptions.method,
         query: nonMatchingOptions.queryParameters,
-        headers: nonMatchingOptions.headers.map((k, v) => MapEntry(k, v.toString())),
+        headers:
+            nonMatchingOptions.headers.map((k, v) => MapEntry(k, v.toString())),
         body: nonMatchingOptions.data,
       );
 
@@ -61,7 +62,8 @@ void main() {
         path: nonMatchingOptions.uri.path,
         method: nonMatchingOptions.method,
         query: nonMatchingOptions.queryParameters,
-        headers: nonMatchingOptions.headers.map((k, v) => MapEntry(k, v.toString())),
+        headers:
+            nonMatchingOptions.headers.map((k, v) => MapEntry(k, v.toString())),
         body: nonMatchingOptions.data,
       );
 
@@ -78,8 +80,8 @@ void main() {
         handler: (_) => MockResponse.text(''),
       );
       final options = RequestOptions(path: url, method: 'GET');
-      final nonMatchingOptions =
-          RequestOptions(path: 'https://api.example.com/v2/data', method: 'GET');
+      final nonMatchingOptions = RequestOptions(
+          path: 'https://api.example.com/v2/data', method: 'GET');
 
       final mockRequest = MockRequest(
         url: options.uri.toString(),
@@ -94,7 +96,8 @@ void main() {
         path: nonMatchingOptions.uri.path,
         method: nonMatchingOptions.method,
         query: nonMatchingOptions.queryParameters,
-        headers: nonMatchingOptions.headers.map((k, v) => MapEntry(k, v.toString())),
+        headers:
+            nonMatchingOptions.headers.map((k, v) => MapEntry(k, v.toString())),
         body: nonMatchingOptions.data,
       );
 
@@ -127,7 +130,8 @@ void main() {
         path: nonMatchingOptions.uri.path,
         method: nonMatchingOptions.method,
         query: nonMatchingOptions.queryParameters,
-        headers: nonMatchingOptions.headers.map((k, v) => MapEntry(k, v.toString())),
+        headers:
+            nonMatchingOptions.headers.map((k, v) => MapEntry(k, v.toString())),
         body: nonMatchingOptions.data,
       );
 
@@ -167,7 +171,8 @@ void main() {
         path: nonMatchingOptions.uri.path,
         method: nonMatchingOptions.method,
         query: nonMatchingOptions.queryParameters,
-        headers: nonMatchingOptions.headers.map((k, v) => MapEntry(k, v.toString())),
+        headers:
+            nonMatchingOptions.headers.map((k, v) => MapEntry(k, v.toString())),
         body: nonMatchingOptions.data,
       );
 

@@ -81,8 +81,8 @@ void main() {
         ),
       );
 
-      final response =
-          await dio.get('http://example.com/search', queryParameters: {'q': 'test'});
+      final response = await dio
+          .get('http://example.com/search', queryParameters: {'q': 'test'});
       expect(response.statusCode, 200);
       expect(response.data, '{"result":"ok"}');
     });
@@ -140,7 +140,8 @@ void main() {
       final logOutput = <String>[];
       engine = MockHttpEngine();
       dio = Dio();
-      dio.interceptors.add(MockInterceptor(engine: engine, log: true, logPrint: logOutput.add));
+      dio.interceptors.add(
+          MockInterceptor(engine: engine, log: true, logPrint: logOutput.add));
 
       MockRegistry.register(
         MockRule(
@@ -164,7 +165,8 @@ void main() {
       final logOutput = <String>[];
       engine = MockHttpEngine();
       dio = Dio();
-      dio.interceptors.add(MockInterceptor(engine: engine, log: false, logPrint: logOutput.add));
+      dio.interceptors.add(
+          MockInterceptor(engine: engine, log: false, logPrint: logOutput.add));
 
       MockRegistry.register(
         MockRule(

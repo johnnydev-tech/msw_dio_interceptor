@@ -29,7 +29,8 @@ void main() {
       final response = MockResponse.json(json, statusCode: 200);
       expect(response.data, jsonEncode(json));
       expect(response.statusCode, 200);
-      expect(response.headers?['content-type'], 'application/json; charset=utf-8');
+      expect(
+          response.headers?['content-type'], 'application/json; charset=utf-8');
     });
 
     test('MockResponse.text should create a text response', () {
