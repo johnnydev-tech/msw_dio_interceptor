@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:msw_dio_interceptor/msw_dio_interceptor.dart';
@@ -15,7 +13,7 @@ void main() {
 
   group('Dio Adapter Tests', () {
     test('should mock response with path', () async {
-      engine = MockHttpEngine(enabled: true);
+      engine = MockHttpEngine();
       dio = Dio();
       dio.interceptors.add(MockInterceptor(engine: engine));
 
@@ -33,7 +31,7 @@ void main() {
     });
 
     test('should mock response with regex', () async {
-      engine = MockHttpEngine(enabled: true);
+      engine = MockHttpEngine();
       dio = Dio();
       dio.interceptors.add(MockInterceptor(engine: engine));
 
@@ -52,7 +50,7 @@ void main() {
 
     test('should mock response with url', () async {
       const url = 'https://api.example.com/v1/me';
-      engine = MockHttpEngine(enabled: true);
+      engine = MockHttpEngine();
       dio = Dio();
       dio.interceptors.add(MockInterceptor(engine: engine));
 
@@ -70,7 +68,7 @@ void main() {
     });
 
     test('should mock response with query params', () async {
-      engine = MockHttpEngine(enabled: true);
+      engine = MockHttpEngine();
       dio = Dio();
       dio.interceptors.add(MockInterceptor(engine: engine));
 
@@ -83,15 +81,15 @@ void main() {
         ),
       );
 
-      final response =
-          await dio.get('http://example.com/search', queryParameters: {'q': 'test'});
+      final response = await dio
+          .get('http://example.com/search', queryParameters: {'q': 'test'});
       expect(response.statusCode, 200);
       expect(response.data, '{"result":"ok"}');
     });
 
     test('should handle delay correctly', () {
       fakeAsync((async) {
-        engine = MockHttpEngine(enabled: true);
+        engine = MockHttpEngine();
         dio = Dio();
         dio.interceptors.add(MockInterceptor(engine: engine));
 
@@ -118,8 +116,17 @@ void main() {
       });
     });
 
+    test('should pass through when interceptor is not added', () {
+      // No interceptor added to dio
+      dio = Dio();
+      expect(
+        () => dio.get('http://unreachable.example.com/test'),
+        throwsA(isA<DioException>()),
+      );
+    });
+
     test('should pass through when no rule matches', () {
-      engine = MockHttpEngine(enabled: true);
+      engine = MockHttpEngine();
       dio = Dio();
       dio.interceptors.add(MockInterceptor(engine: engine));
       // No rules registered
@@ -131,9 +138,10 @@ void main() {
 
     test('should log mocked requests when log is true', () async {
       final logOutput = <String>[];
-      engine = MockHttpEngine(enabled: true);
+      engine = MockHttpEngine();
       dio = Dio();
-      dio.interceptors.add(MockInterceptor(engine: engine, log: true, logPrint: logOutput.add));
+      dio.interceptors.add(
+          MockInterceptor(engine: engine, log: true, logPrint: logOutput.add));
 
       MockRegistry.register(
         MockRule(
@@ -155,9 +163,10 @@ void main() {
 
     test('should not log mocked requests when log is false', () async {
       final logOutput = <String>[];
-      engine = MockHttpEngine(enabled: true);
+      engine = MockHttpEngine();
       dio = Dio();
-      dio.interceptors.add(MockInterceptor(engine: engine, log: false, logPrint: logOutput.add));
+      dio.interceptors.add(
+          MockInterceptor(engine: engine, log: false, logPrint: logOutput.add));
 
       MockRegistry.register(
         MockRule(

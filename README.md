@@ -15,7 +15,7 @@ This package provides a clean, universal mocking engine and a dedicated `dio` in
 -   [How to Use](#how-to-use)
     -   [1. Enable Mocks via Environment Flag](#1-enable-mocks-via-environment-flag)
     -   [2. Register Mock Rules](#2-register-mock-rules)
-    -   [3. Add the Interceptor to Dio](#3-add-the-interceptor-to-dio)
+    -   [3. Conditionally Add the Interceptor to Dio](#3-conditionally-add-the-interceptor-to-dio)
 -   [Mocking Capabilities](#mocking-capabilities)
     -   [Basic Path Matching](#basic-path-matching)
     -   [Matching by Regular Expression (RegExp)](#matching-by-regular-expression-regexp)
@@ -36,7 +36,7 @@ This package provides a clean, universal mocking engine and a dedicated `dio` in
 
 -   ✅ **Clean Architecture**: A universal core engine with a dedicated adapter for Dio.
 -   ✅ **Easy to Use**: Simple and intuitive API for registering mock rules.
--   ✅ **Environment-Controlled**: Enable or disable mocks globally with an environment flag.
+-   ✅ **Environment-Controlled**: Enable or disable mocks globally by conditionally adding the interceptor.
 -   ✅ **Flexible Matching**: Match requests by path, full URL, RegExp, and query parameters.
 -   ✅ **Realistic Simulations**: Simulate status codes, errors, delays, and custom headers.
 -   ✅ **Customizable Logging**: Built-in logging for mocked requests, with custom print function support.
@@ -59,7 +59,7 @@ Then, run `dart pub get` or `flutter pub get`.
 
 ### 1. Enable Mocks via Environment Flag
 
-To run your application with mocks enabled, use the `--define` flag:
+To enable mocks, you will conditionally add the `MockInterceptor` to your Dio instance based on an environment flag.
 
 ```sh
 # For pure Dart apps
@@ -91,9 +91,9 @@ void setupMocks() {
 }
 ```
 
-### 3. Add the Interceptor to Dio
+### 3. Conditionally Add the Interceptor to Dio
 
-Create an instance of the `MockHttpEngine` and pass it to the `MockInterceptor`.
+Create an instance of the `MockHttpEngine` and the `MockInterceptor`. Then, conditionally add the `MockInterceptor` to Dio's interceptors list based on your environment flag.
 
 ```dart
 import 'package:dio/dio.dart';
@@ -101,12 +101,16 @@ import 'package:msw_dio_interceptor/msw_dio_interceptor.dart';
 
 const bool kEnableApiMock = bool.fromEnvironment('ENABLE_API_MOCK');
 
-// 1. Create the engine, enabled/disabled by the environment flag
-final mockEngine = MockHttpEngine(enabled: kEnableApiMock);
+// 1. Create the engine (it no longer has an 'enabled' flag)
+final mockEngine = MockHttpEngine();
 
-// 2. Create a Dio instance and add the interceptor
+// 2. Create a Dio instance
 final dio = Dio();
-dio.interceptors.add(MockInterceptor(engine: mockEngine));
+
+// 3. Conditionally add the interceptor
+if (kEnableApiMock) {
+  dio.interceptors.add(MockInterceptor(engine: mockEngine));
+}
 
 // Now you can use dio as usual
 await dio.get('/products');
@@ -353,21 +357,17 @@ import 'package:msw_dio_interceptor/msw_dio_interceptor.dart';
 
 void main() {
   late Dio dio;
-  late ProductRepository productRepository;
   late MockHttpEngine mockEngine;
 
   setUp(() {
     // 1. Create the mock engine, enabled for tests
-    mockEngine = MockHttpEngine(enabled: true);
+    mockEngine = MockHttpEngine();
     
     // 2. Create a new Dio instance for each test and add the interceptor
     dio = Dio();
     dio.interceptors.add(MockInterceptor(engine: mockEngine));
-    
-    // 3. Create an instance of your repository
-    productRepository = ProductRepository(dio);
 
-    // 4. Clear all mocks before each test to ensure isolation
+    // 3. Clear all mocks before each test to ensure isolation
     MockRegistry.clear();
   });
 
@@ -387,7 +387,10 @@ void main() {
     );
 
     // Act: Call the method you want to test
-    final products = await productRepository.fetchProducts();
+    final response = await dio.get('/products');
+    final products = (response.data['items'] as List)
+        .map((item) => Product.fromJson(item))
+        .toList();
 
     // Assert: Verify the result
     expect(products, isA<List<Product>>());
@@ -415,12 +418,3 @@ void main() {
     );
   });
 }
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to open an issue or submit a pull request.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

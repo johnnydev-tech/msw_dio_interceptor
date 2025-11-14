@@ -56,8 +56,8 @@ void main() {
       expect(MockRegistry.find(nonMatchingRequest), isNull);
     });
 
-    test('MockHttpEngine handles request when enabled', () async {
-      final engine = MockHttpEngine(enabled: true);
+    test('MockHttpEngine handles request when a rule matches', () async {
+      final engine = MockHttpEngine();
       MockRegistry.register(
         MockRule(
           path: '/test',
@@ -79,26 +79,6 @@ void main() {
       expect(response?.data, 'success');
     });
 
-    test('MockHttpEngine returns null when disabled', () async {
-      final engine = MockHttpEngine(enabled: false);
-      MockRegistry.register(
-        MockRule(
-          path: '/test',
-          method: 'GET',
-          handler: (_) => MockResponse.text('success'),
-        ),
-      );
 
-      final request = MockRequest(
-        url: 'http://example.com/test',
-        path: '/test',
-        method: 'GET',
-        query: {},
-        headers: {},
-      );
-
-      final response = await engine.handle(request);
-      expect(response, isNull);
-    });
   });
 }

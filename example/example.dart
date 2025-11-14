@@ -1,23 +1,27 @@
 import 'package:dio/dio.dart';
 import 'package:msw_dio_interceptor/msw_dio_interceptor.dart';
-import 'package:flutter/foundation.dart'; // For debugPrint in Flutter environments
 
-const bool kEnableApiMock = bool.fromEnvironment('ENABLE_API_MOCK', defaultValue: false);
+const bool kEnableApiMock =
+    bool.fromEnvironment('ENABLE_API_MOCK', defaultValue: false);
 
 Future<void> main() async {
   // --- 1. Setup the Mock Engine and Interceptor ---
-  // The MockHttpEngine is the core logic, enabled/disabled by the flag.
-  final mockEngine = MockHttpEngine(enabled: kEnableApiMock);
+  // The MockHttpEngine is the core logic. It no longer has an 'enabled' flag.
+  final mockEngine = MockHttpEngine();
 
   // The MockInterceptor integrates the engine with Dio.
   final dio = Dio();
-  dio.interceptors.add(
-    MockInterceptor(
-      engine: mockEngine,
-      log: true, // Enable logging for mocked requests
-      logPrint: (message) => kDebugMode ? debugPrint(message) : print(message), // Use debugPrint in Flutter
-    ),
-  );
+
+  // Conditionally add the interceptor based on the environment flag.
+  if (kEnableApiMock) {
+    dio.interceptors.add(
+      MockInterceptor(
+        engine: mockEngine,
+        log: true, // Enable logging for mocked requests
+        logPrint: (message) => print(message), // Use debugPrint in Flutter
+      ),
+    );
+  }
 
   // --- 2. Register Mock Rules ---
   // Define all your mock rules here. They are global to the MockRegistry.
@@ -85,7 +89,9 @@ void setupMocks() {
       method: 'GET',
       queryParams: {'q': 'dart'},
       handler: (request) async {
-        return MockResponse.json({'results': ['Dart is awesome!']});
+        return MockResponse.json({
+          'results': ['Dart is awesome!']
+        });
       },
     ),
   );
@@ -96,7 +102,8 @@ void setupMocks() {
       path: '/orders',
       method: 'POST',
       handler: (request) async {
-        return MockResponse.json({'orderId': 'mock-123', 'status': 'created'}, statusCode: 201);
+        return MockResponse.json({'orderId': 'mock-123', 'status': 'created'},
+            statusCode: 201);
       },
     ),
   );
@@ -132,42 +139,56 @@ Future<void> runBasicExamples(Dio dio) async {
   print('\n--- Basic Examples ---');
 
   // Fetch products
-  await _makeRequest(dio, () => dio.get('http://example.com/products'), 'GET /products');
+  await _makeRequest(
+      dio, () => dio.get('http://example.com/products'), 'GET /products');
 
   // Create an order
-  await _makeRequest(dio, () => dio.post('http://example.com/orders', data: {'item': 'new'}), 'POST /orders');
+  await _makeRequest(
+      dio,
+      () => dio.post('http://example.com/orders', data: {'item': 'new'}),
+      'POST /orders');
 }
 
 Future<void> runAdvancedMatchingExamples(Dio dio) async {
   print('\n--- Advanced Matching Examples ---');
 
   // Fetch user by ID (regex)
-  await _makeRequest(dio, () => dio.get('http://example.com/users/456'), 'GET /users/456 (regex)');
+  await _makeRequest(dio, () => dio.get('http://example.com/users/456'),
+      'GET /users/456 (regex)');
 
   // Check API status (full URL)
-  await _makeRequest(dio, () => dio.get('https://api.example.com/status'), 'GET https://api.example.com/status (full URL)');
+  await _makeRequest(dio, () => dio.get('https://api.example.com/status'),
+      'GET https://api.example.com/status (full URL)');
 
   // Search with query params
-  await _makeRequest(dio, () => dio.get('http://example.com/search', queryParameters: {'q': 'dart'}), 'GET /search?q=dart (query params)');
+  await _makeRequest(
+      dio,
+      () =>
+          dio.get('http://example.com/search', queryParameters: {'q': 'dart'}),
+      'GET /search?q=dart (query params)');
 }
 
 Future<void> runErrorAndDelayExamples(Dio dio) async {
   print('\n--- Error and Delay Examples ---');
 
   // Fetch protected profile (error)
-  await _makeRequest(dio, () => dio.get('http://example.com/auth/profile'), 'GET /auth/profile (error)');
+  await _makeRequest(dio, () => dio.get('http://example.com/auth/profile'),
+      'GET /auth/profile (error)');
 
   // Fetch slow data (delay)
-  await _makeRequest(dio, () => dio.get('http://example.com/slow-data'), 'GET /slow-data (delay)');
+  await _makeRequest(dio, () => dio.get('http://example.com/slow-data'),
+      'GET /slow-data (delay)');
 }
 
-Future<void> _makeRequest(Dio dio, Future<Response> Function() requestFn, String description) async {
+Future<void> _makeRequest(
+    Dio dio, Future<Response> Function() requestFn, String description) async {
   try {
     print('Requesting: $description');
     final response = await requestFn();
     print('✅ Success [${response.statusCode}]: ${response.data}');
   } on DioException catch (e) {
-    print('❌ Error [${e.response?.statusCode ?? e.type}]: ${e.response?.data ?? e.message}');
+    print(
+        '❌ Error [${e.response?.statusCode ?? e.type}]: ${e.response?.data ?? e.message}');
   } catch (e) {
     print('❌ Unexpected Error: $e');
   }
