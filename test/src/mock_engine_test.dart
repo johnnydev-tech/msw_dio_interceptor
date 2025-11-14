@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:msw_dio_interceptor/msw_dio_interceptor.dart';
 import 'package:test/test.dart';
