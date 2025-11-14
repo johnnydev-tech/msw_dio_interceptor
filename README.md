@@ -3,7 +3,7 @@
 [![Lint and Test Status](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/lint_and_test.yaml/badge.svg)](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/lint_and_test.yaml)
 [![Release Status](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/release.yaml/badge.svg)](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/release.yaml)
 [![Pub Version](https://img.shields.io/pub/v/msw_dio_interceptor)](https://pub.dev/packages/msw_dio_interceptor)
-[![License: MIT](https://img.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Heavily inspired by [Mock Service Worker (MSW)](https://mswjs.io/), this is a powerful and flexible mock interceptor for `dio`, designed for Dart and Flutter applications. It enables you to intercept `dio` requests and return simulated responses based on configurable rules, making it perfect for testing, development, and UI prototyping without relying on a running backend.
 
