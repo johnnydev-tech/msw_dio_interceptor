@@ -1,14 +1,16 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Lint and Test"]
+    types: [completed]
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    # Only run if the Lint and Test workflow was successful
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write # Required to create a release and push tags
       pull-requests: write # Required to open/update pull requests (e.g., for changelog)
@@ -18,8 +20,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # Fetch all history for semantic-release to analyze commits
-          fetch-depth: 0
+          fetch-depth: 0 # Fetch all history for semantic-release to analyze commits
+          # Use the GITHUB_TOKEN from the workflow_run event
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

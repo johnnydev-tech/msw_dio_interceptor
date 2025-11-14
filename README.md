@@ -1,6 +1,7 @@
 # MSW Dio Interceptor
 
-[![Build Status](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/ci.yaml/badge.svg)](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/ci.yaml)
+[![Lint and Test Status](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/lint_and_test.yaml/badge.svg)](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/lint_and_test.yaml)
+[![Release Status](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/release.yaml/badge.svg)](https://github.com/johnnydev-tech/msw_dio_interceptor/actions/workflows/release.yaml)
 [![Pub Version](https://img.shields.io/pub/v/msw_dio_interceptor)](https://pub.dev/packages/msw_dio_interceptor)
 [![License: MIT](https://img.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
