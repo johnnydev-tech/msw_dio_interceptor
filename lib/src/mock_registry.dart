@@ -15,9 +15,11 @@ class MockRegistry {
     _rules.add(rule);
   }
 
-  /// Finds the first [MockRule] that matches the given [MockRequest].
+  /// Finds the last [MockRule] that matches the given [MockRequest].
+  /// This ensures that newer handlers override previous ones.
   static MockRule? find(MockRequest request) {
-    for (final rule in _rules) {
+    for (int i = _rules.length - 1; i >= 0; i--) {
+      final rule = _rules[i];
       if (_matcher.matches(rule, request)) {
         return rule;
       }
