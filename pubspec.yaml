@@ -3,6 +3,7 @@ description: A powerful mock interceptor for Dio, inspired by MSW. Easily mock H
 version: 1.0.4
 repository: https://github.com/johnnydev-tech/msw_dio_interceptor
 homepage: https://github.com/johnnydev-tech/msw_dio_interceptor
+license: MIT
 
 environment:
   sdk: '>=2.12.0 <4.0.0'
