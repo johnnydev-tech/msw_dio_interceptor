@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/johnnydev-tech/msw_dio_interceptor/compare/v1.0.3...v1.0.4) (2026-04-12)
+
+
+### Bug Fixes
+
+* Update MockRegistry to ensure newer handlers override previous ones and add tests for handler precedence ([02e9ad8](https://github.com/johnnydev-tech/msw_dio_interceptor/commit/02e9ad85c0e10b6ff597cb7734678de2c243ae5c))
+
 ## [1.0.3](https://github.com/johnnydev-tech/msw_dio_interceptor/compare/v1.0.2...v1.0.3) (2025-11-14)
 
 
