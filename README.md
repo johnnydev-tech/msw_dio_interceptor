@@ -21,6 +21,7 @@ Heavily inspired by [Mock Service Worker (MSW)](https://mswjs.io/), this is a po
     -   [Matching by Full URL](#matching-by-full-url)
     -   [Matching with Query Parameters](#matching-with-query-parameters)
     -   [Mocking Different HTTP Methods](#mocking-different-http-methods)
+    -   [Handler Override](#handler-override)
     -   [Simulating Network Latency (Delay)](#simulating-network-latency-delay)
     -   [Mocking Error Responses](#mocking-error-responses)
     -   [Mocking Different Response Body Types](#mocking-different-response-body-types)
@@ -205,6 +206,72 @@ MockRegistry.register(
     handler: (request) => MockResponse.json({'message': 'Item created'}, statusCode: 201),
   ),
 );
+```
+
+### Handler Override
+
+Newly registered handlers take precedence over previously registered ones. This is useful when you want to set a default handler and override it for specific test scenarios, or sequence different responses for the same request.
+
+```dart
+// Register a default handler
+MockRegistry.register(
+  MockRule(
+    path: '/api/status',
+    method: 'GET',
+    handler: (request) => MockResponse.json({'status': 'ready'}),
+  ),
+);
+
+// Later, override with a different response for a specific test
+MockRegistry.register(
+  MockRule(
+    path: '/api/status',
+    method: 'GET',
+    handler: (request) => MockResponse.json({'status': 'loading'}, statusCode: 503),
+  ),
+);
+
+// The second handler will be matched (it was registered last)
+final response = await dio.get('/api/status');
+assert(response.statusCode == 503); // true
+```
+
+This pattern is especially useful in test suites where you want a catch-all handler at the beginning and specific overrides at different test points.
+
+```dart
+void main() {
+  setUp(() {
+    MockRegistry.clear();
+    
+    // Default handler for all requests
+    MockRegistry.register(
+      MockRule(
+        path: '/api/data',
+        method: 'GET',
+        handler: (_) => MockResponse.json({'data': 'default'}),
+      ),
+    );
+  });
+
+  test('test 1 - uses default handler', () async {
+    final response = await dio.get('/api/data');
+    expect(response.data['data'], equals('default'));
+  });
+
+  test('test 2 - overrides with custom response', () async {
+    // Override the handler for this specific test
+    MockRegistry.register(
+      MockRule(
+        path: '/api/data',
+        method: 'GET',
+        handler: (_) => MockResponse.json({'data': 'custom'}),
+      ),
+    );
+    
+    final response = await dio.get('/api/data');
+    expect(response.data['data'], equals('custom'));
+  });
+}
 ```
 
 ### Simulating Network Latency (Delay)
