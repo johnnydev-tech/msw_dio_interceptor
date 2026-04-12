@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/johnnydev-tech/msw_dio_interceptor/compare/v1.0.4...v1.0.5) (2026-04-12)
+
+
+### Bug Fixes
+
+* Add documentation for handler override feature ([df81388](https://github.com/johnnydev-tech/msw_dio_interceptor/commit/df81388eff7282ce41fe20e6774118584f1ead9e))
+
 ## [1.0.4](https://github.com/johnnydev-tech/msw_dio_interceptor/compare/v1.0.3...v1.0.4) (2026-04-12)
 
 
